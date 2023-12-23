@@ -37,7 +37,7 @@ export default function SignUp() {
       setLoading(false);
       console.log(data);
       setError(null);
-      navigate('/sign-in');
+      navigate('/signin');
     } catch (error) {
       setLoading(false); 
       setError(error.message);
@@ -80,7 +80,7 @@ export default function SignUp() {
       </form>
       <div className='flex gap-2 mt-5'>
         <p>Have an account?</p>
-        <Link to={'/sign-in'}>
+        <Link to={'/signin'}>
           <span className='text-blue-700'> Sign In</span>
         </Link>
       </div>
