@@ -1,9 +1,9 @@
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 import { errorHandler } from "./utils/error.js";
-import  Jwt  from "jsonwebtoken";
+import jwt from "jsonwebtoken";  // Updated import statement
 
-export const signup = async (req, res , next) => {
+export const signup = async (req, res, next) => {
     try {
         // Extract data from request body
         const { username, email, password } = req.body;
@@ -30,7 +30,6 @@ export const signup = async (req, res , next) => {
     }
 };
 
-
 export const signin = async (req, res, next) => {
     const { email, password } = req.body;
     try {
@@ -51,8 +50,8 @@ export const signin = async (req, res, next) => {
             return next(errorHandler(401, 'Wrong Credential'));
         }
 
-        const token = Jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
-        const {hashedPassword : pass , ...rest } = validUser._doc;
+        const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+        const { hashedPassword: pass, ...rest } = validUser._doc;
 
         res
             .cookie('access_token', token, { httpOnly: true })
@@ -64,38 +63,51 @@ export const signin = async (req, res, next) => {
     }
 };
 
-
-
 export const google = async (req, res, next) => {
     try {
-      const user = await User.findOne({ email: req.body.email });
-  
-      if (user) {
-        const token = JWT.sign({ id: user._id }, process.env.JWT_SECRET);
-        const { password: pass, ...rest } = user._doc;
-        res
-          .cookie('access_token', token, { httpOnly: true })
-          .status(200)
-          .json(rest);
-      } else {
-        const generatedPassword = Math.random().toString(36).slice(-8);
-        const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
-        const newUser = new User({
-          username: req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
-          email: req.body.email,
-          password: hashedPassword,
-          avatar: req.body.photo
-        });
-        await newUser.save();
-        const token = JWT.sign({ id: newUser._id }, process.env.JWT_SECRET); // Corrected to use newUser
-        const { password: pass, ...rest } = newUser._doc;
-        res
-          .cookie('access_token', token, { httpOnly: true })
-          .status(200)
-          .json(rest);
-          
-      }
+    
+
+        // Check if email is present in the request body
+        if (!req.body.email) {
+            return res.status(400).json({ error: 'Email is missing in the request body' });
+        }
+
+        const user = await User.findOne({ email: req.body.email });
+        if (user) {
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+            const { password: pass, ...rest } = user._doc;
+            res
+                .cookie('access_token', token, { httpOnly: true })
+                .status(200)
+                .json(rest);
+        } else {
+            const generatedPassword =
+                Math.random().toString(36).slice(-8) +
+                Math.random().toString(36).slice(-8);
+            const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
+            console.log("Generated Password:", generatedPassword);
+            console.log("Hashed Password:", hashedPassword);
+
+            const newUser = new User({
+                username:
+                    req.body.name.split(' ').join('').toLowerCase() +
+                    Math.random().toString(36).slice(-4),
+                email: req.body.email,
+                hashedPassword: hashedPassword,
+                avatar: req.body.photo,
+            });
+
+            await newUser.save();
+            const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+            const { password: pass, ...rest } = newUser._doc;
+            res
+                .cookie('access_token', token, { httpOnly: true })
+                .status(200)
+                .json(rest);
+        }
     } catch (error) {
-      next(error);
+        console.error("Error:", error);
+        next(error);
     }
-  };
+};
