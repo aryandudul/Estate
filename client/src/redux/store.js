@@ -3,7 +3,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import userReducer from './User/userSlice'; // Adjust the path accordingly
+import userReducer from './user/userSlice'; // Adjust the path accordingly
 
 const rootReducer = combineReducers({ user: userReducer });
 
