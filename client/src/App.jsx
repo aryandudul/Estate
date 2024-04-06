@@ -7,7 +7,7 @@ import Profile from "./Pages/Profile";
 import Header from "./Components/Header";
 import PrivateRoute from "./Components/PrivateRoute";
 import CreateListing from './Pages/CreateListing';
-import UpdateListing from './pages/UpdateListing';
+import UpdateListing from './Pages/UpdateListing.jsx';
 import Listing from './Pages/Listing';
 import Search from "./Pages/Search";
 
