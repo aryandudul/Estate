@@ -15,7 +15,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   signOutUserStart,
-} from '../redux/user/userSlice';
+} from '../redux/User/userSlice';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
